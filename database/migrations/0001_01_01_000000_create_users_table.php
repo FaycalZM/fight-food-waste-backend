@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // 'users' table represents the 'merchants' table in the database
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('address');
+            $table->string('contact_info');
+            $table->enum('membership_status', ['active', 'expired', 'pending']);
+            $table->date('membership_expiry_date');
             $table->string('password');
-            $table->rememberToken();
             $table->timestamps();
         });
 
