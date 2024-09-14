@@ -20,7 +20,7 @@ class MerchantAuthController extends Controller
         $token = $user->createToken($request->name);
 
         return [
-            'user' => $user,
+            'User' => $user,
             'token' => $token->plainTextToken
         ];
     }
@@ -29,7 +29,7 @@ class MerchantAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users',
+            'email' => 'required|email|exists:Users',
             'password' => 'required|string'
         ]);
 
@@ -41,16 +41,16 @@ class MerchantAuthController extends Controller
         }
 
         return [
-            'user' => $user,
+            'User' => $user,
             'token' => $user->createToken($user->name)->plainTextToken
         ];
     }
 
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        $request->User()->tokens()->delete();
         return [
-            'message' => 'Merchant Logged out successfully'
+            'message' => 'User Logged out successfully'
         ];
     }
 }
