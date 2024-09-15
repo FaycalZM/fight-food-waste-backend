@@ -169,14 +169,36 @@ class UsersManagementController extends Controller
         return Stock::all();
     }
 
+    public function get_product_quantity($id, $product_name) {
+        $stock = Stock::find($id);
+        $products = $stock->products;       
+        $quantity = 0;
+
+        foreach($products as $product)
+        {
+            if($product->product_name == $product_name){
+                $quantity += 1;
+            }
+        }
+        return $quantity;
+    }
+
     public function get_stock($id)
     {
-        $stock = Stock::find($id);
+        $stock = Stock::find($id);  
         if($stock)
         {
+            $products = [];
+            foreach($stock->products as $product) {
+                $products[] = [
+                    'product' => $product->product_name,
+                    'quantity' => $this->get_product_quantity($id, $product->product_name)
+                ];
+            };
             return [
                 'message' => 'stock found',
-                'stock' => $stock
+                'stock' => $stock,
+                'stock_products' => $products 
             ];
         }
         else
@@ -185,6 +207,24 @@ class UsersManagementController extends Controller
                 'message' => 'stock not found'
             ], 404);
         }
+    }
+
+    public function find_product($id) 
+    {
+
+    }
+
+    public function create_stock(Request $request)
+    {
+        $field = $request->validate([
+            'warehouse_location' => 'required|string',
+        ]);
+        
+        $stock = Stock::create($field);
+        return [
+            'message' => 'Stock created',
+            'stock' => $stock
+        ];
     }
 
     /*  ------------------------- Products ------------------------------- */
@@ -197,7 +237,7 @@ class UsersManagementController extends Controller
     {
         $product = Product::find($id);
         if($product)
-        {
+        {   
             return [
                 'message' => 'product found',
                 'product' => $product
@@ -209,5 +249,23 @@ class UsersManagementController extends Controller
                 'message' => 'product not found'
             ], 404);
         }
+    }
+
+    public function create_product(Request $request)
+    {
+        $fields = $request->validate([
+            'product_name' => 'required|string',
+            'barcode' => 'nullable',
+            'category' => 'nullable',
+            'expiration_date' => 'nullable',
+            'user_id' => 'required|integer',
+            'stock_id' => 'required|integer'
+        ]);
+        
+        $product = Product::create($fields);
+        return [
+            'message' => 'Product created',
+            'product' => $product
+        ];
     }
 }

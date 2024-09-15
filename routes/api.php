@@ -33,22 +33,28 @@ Route::get('admin/all_merchants', [\App\Http\Controllers\UsersManagementControll
 Route::get('admin/merchants/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_user']);
 Route::get('admin/merchants/{id}/approve_membership', [\App\Http\Controllers\UsersManagementController::class, 'approve_subscription']);
 
+
 Route::get('admin/all_skills', [\App\Http\Controllers\UsersManagementController::class, 'all_skills']);
 Route::get('admin/skills/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_skill']);
 
+
 Route::get('admin/all_volunteers', [\App\Http\Controllers\UsersManagementController::class, 'all_volunteers']);
 Route::get('admin/volunteers/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_volunteer']);
+
 
 Route::get('admin/all_collections', [\App\Http\Controllers\UsersManagementController::class, 'all_collections']);
 Route::get('admin/collections/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_collection']);
 Route::post('admin/add_collection', [\App\Http\Controllers\UsersManagementController::class, 'create_collection']);
 
+
 Route::get('admin/all_stocks', [\App\Http\Controllers\UsersManagementController::class, 'all_stocks']);
 Route::get('admin/stocks/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_stock']);
+Route::post('admin/add_stock', [\App\Http\Controllers\UsersManagementController::class, 'create_stock']);
+
 
 Route::get('admin/all_products', [\App\Http\Controllers\UsersManagementController::class, 'all_products']);
 Route::get('admin/products/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_product']);
-
+Route::post('admin/add_product', [\App\Http\Controllers\UsersManagementController::class, 'create_product']);
 
 // protected routes
 Route::middleware('auth:sanctum')->group(function () {
