@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('contact_info');
             $table->string('address');
             $table->unsignedBigInteger('skill_id');
-            $table->string('availability_start');
-            $table->string('availability_end');
+            $table->integer('availability_start');
+            $table->integer('availability_end');
             $table->string('password');
             $table->timestamps();
 

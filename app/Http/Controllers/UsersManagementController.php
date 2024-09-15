@@ -180,7 +180,7 @@ class UsersManagementController extends Controller
                 $quantity += 1;
             }
         }
-        return $quantity;
+        return $quantity;   
     }
 
     public function get_stock($id)
@@ -209,9 +209,23 @@ class UsersManagementController extends Controller
         }
     }
 
-    public function find_product($id) 
+    public function find_product($id, Request $request) 
     {
+        $searched_term = $request->searched_term;
+        /*$stock = Stock::find($id);
 
+        $products = [];
+        foreach($stock->products as $product)
+        {
+            if($product->product_name   )
+        }*/
+        $products = Product::where('product_name', 'LIKE', "%{$searched_term}%")
+                            ->where('stock_id', $id)
+                            ->get();
+        return [
+            'message' => 'Found products',
+            'products' => $products,
+        ];
     }
 
     public function create_stock(Request $request)

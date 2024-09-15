@@ -50,11 +50,13 @@ Route::post('admin/add_collection', [\App\Http\Controllers\UsersManagementContro
 Route::get('admin/all_stocks', [\App\Http\Controllers\UsersManagementController::class, 'all_stocks']);
 Route::get('admin/stocks/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_stock']);
 Route::post('admin/add_stock', [\App\Http\Controllers\UsersManagementController::class, 'create_stock']);
+Route::get('admin/stocks/{id}/search', [\App\Http\Controllers\UsersManagementController::class, 'find_product']);
 
 
 Route::get('admin/all_products', [\App\Http\Controllers\UsersManagementController::class, 'all_products']);
 Route::get('admin/products/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_product']);
 Route::post('admin/add_product', [\App\Http\Controllers\UsersManagementController::class, 'create_product']);
+
 
 // protected routes
 Route::middleware('auth:sanctum')->group(function () {

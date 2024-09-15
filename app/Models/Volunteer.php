@@ -38,8 +38,6 @@ class Volunteer extends Authenticatable
     protected function casts(): array
     {
         return [
-            'availability_start' => 'datetime',
-            'availability_end' => 'datetime',
             'password' => 'hashed',
         ];
     }
