@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('address');
             $table->string('contact_info');
-            $table->enum('membership_status', ['active', 'expired', 'pending']);
+            $table->enum('membership_status', ['active', 'expired', 'pending', 'rejected']);
             $table->date('membership_expiry_date');
             $table->string('password');
             $table->timestamps();

@@ -12,6 +12,7 @@ class Collection extends Model
     protected $fillable = [
         'user_ids',
         'scheduled_time',
+        'volunteers_count',
         'route',
         'collection_status',
     ];

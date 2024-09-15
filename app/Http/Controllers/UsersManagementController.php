@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\Skill;
 use App\Models\Volunteer;
 use App\Models\Collection;
+use App\Models\Stock;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -148,6 +150,7 @@ class UsersManagementController extends Controller
         $fields = $request->validate([
             'user_ids' => 'required|string',
             'scheduled_time' => 'required',
+            'volunteers_count' => 'required',
             'route' => 'required|string',
             'collection_status' => 'required|string'
         ]);
@@ -158,5 +161,53 @@ class UsersManagementController extends Controller
             'message' => 'Collection created',
             'collection' => $collection
         ];
+    }
+
+    /*  ------------------------- Stocks ------------------------------- */
+    public function all_stocks()
+    {
+        return Stock::all();
+    }
+
+    public function get_stock($id)
+    {
+        $stock = Stock::find($id);
+        if($stock)
+        {
+            return [
+                'message' => 'stock found',
+                'stock' => $stock
+            ];
+        }
+        else
+        {
+            return response([
+                'message' => 'stock not found'
+            ], 404);
+        }
+    }
+
+    /*  ------------------------- Products ------------------------------- */
+    public function all_products()
+    {
+        return Product::all();
+    }
+
+    public function get_product($id)
+    {
+        $product = Product::find($id);
+        if($product)
+        {
+            return [
+                'message' => 'product found',
+                'product' => $product
+            ];
+        }
+        else
+        {
+            return response([
+                'message' => 'product not found'
+            ], 404);
+        }
     }
 }

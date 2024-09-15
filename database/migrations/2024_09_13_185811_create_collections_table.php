@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('user_ids'); // merchants_ids
             $table->dateTime('scheduled_time');
+            $table->integer('volunteers_count');
             $table->string('route')->nullable();
             $table->enum('collection_status', ['Scheduled', 'Completed', 'In Progress'])->default('Scheduled');
             $table->timestamps();

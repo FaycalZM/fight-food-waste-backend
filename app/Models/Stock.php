@@ -10,7 +10,11 @@ class Stock extends Model
     use HasFactory;
 
     protected $fillable = [
-        'quantity_in_stock',
         'warehouse_location',
     ];
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

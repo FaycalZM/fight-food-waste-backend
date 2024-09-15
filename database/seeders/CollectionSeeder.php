@@ -23,7 +23,8 @@ class CollectionSeeder extends Seeder
             $randomTimestamp = rand($startDate, $endDate);
             DB::table('collections')->insert([
                 'user_ids' => $i + 1 . ',' . $i + 2 . ',' . $i + 3,
-                'scheduled_time' => date('Y-m-d H:i:s', $randomTimestamp),
+                'scheduled_time' => date('Y-m-d H', $randomTimestamp),
+                'volunteers_count' => $i,
                 'route' => Str::random(5) . "," . Str::random(5) . "," . Str::random(5),
                 'collection_status' => "Scheduled",
             ]);

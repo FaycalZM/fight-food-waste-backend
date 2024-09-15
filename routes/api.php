@@ -43,7 +43,11 @@ Route::get('admin/all_collections', [\App\Http\Controllers\UsersManagementContro
 Route::get('admin/collections/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_collection']);
 Route::post('admin/add_collection', [\App\Http\Controllers\UsersManagementController::class, 'create_collection']);
 
+Route::get('admin/all_stocks', [\App\Http\Controllers\UsersManagementController::class, 'all_stocks']);
+Route::get('admin/stocks/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_stock']);
 
+Route::get('admin/all_products', [\App\Http\Controllers\UsersManagementController::class, 'all_products']);
+Route::get('admin/products/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_product']);
 
 
 // protected routes

@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->integer('quantity_in_stock');
             $table->string('warehouse_location')->nullable();
             $table->timestamps();
         });
