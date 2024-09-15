@@ -10,16 +10,11 @@ class Collection extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'user_ids',
         'scheduled_time',
         'route',
         'collection_status',
     ];
-
-    public function merchant()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
 
     public function products()
     {

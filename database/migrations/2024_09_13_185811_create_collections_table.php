@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('collections', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id'); // merchant_id
+            $table->string('user_ids'); // merchants_ids
             $table->dateTime('scheduled_time');
             $table->string('route')->nullable();
             $table->enum('collection_status', ['Scheduled', 'Completed', 'In Progress'])->default('Scheduled');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            //$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

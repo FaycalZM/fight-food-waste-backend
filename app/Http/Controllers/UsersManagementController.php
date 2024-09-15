@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Skill;
 use App\Models\Volunteer;
+use App\Models\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -61,6 +62,11 @@ class UsersManagementController extends Controller
 
     }
 
+    public function subscription_reminder() 
+    {
+
+    }
+
 
     /*  ------------------------- Skills ------------------------------- */
     public function all_skills()
@@ -109,5 +115,48 @@ class UsersManagementController extends Controller
                 'message' => 'volunteer not found'
             ], 404);
         }
+    }
+
+    
+    /*  ------------------------- Collections ------------------------------- */
+
+    public function all_collections()
+    {
+        return Collection::all();
+    }
+
+    public function get_collection($id)
+    {
+        $collection = Collection::find($id);
+        if($collection)
+        {
+            return [
+                'message' => 'collection found',
+                'collection' => $collection
+            ];
+        }
+        else
+        {
+            return response([
+                'message' => 'collection not found'
+            ], 404);
+        }
+    }
+
+    public function create_collection(Request $request)
+    {
+        $fields = $request->validate([
+            'user_ids' => 'required|string',
+            'scheduled_time' => 'required',
+            'route' => 'required|string',
+            'collection_status' => 'required|string'
+        ]);
+
+        $collection = Collection::create($fields);
+
+        return [
+            'message' => 'Collection created',
+            'collection' => $collection
+        ];
     }
 }

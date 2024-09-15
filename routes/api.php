@@ -32,10 +32,17 @@ Route::post('admin/login', [\App\Http\Controllers\AdminAuthController::class, 'l
 Route::get('admin/all_merchants', [\App\Http\Controllers\UsersManagementController::class, 'all_users']);
 Route::get('admin/merchants/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_user']);
 Route::get('admin/merchants/{id}/approve_membership', [\App\Http\Controllers\UsersManagementController::class, 'approve_subscription']);
+
 Route::get('admin/all_skills', [\App\Http\Controllers\UsersManagementController::class, 'all_skills']);
 Route::get('admin/skills/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_skill']);
+
 Route::get('admin/all_volunteers', [\App\Http\Controllers\UsersManagementController::class, 'all_volunteers']);
 Route::get('admin/volunteers/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_volunteer']);
+
+Route::get('admin/all_collections', [\App\Http\Controllers\UsersManagementController::class, 'all_collections']);
+Route::get('admin/collections/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_collection']);
+Route::post('admin/add_collection', [\App\Http\Controllers\UsersManagementController::class, 'create_collection']);
+
 
 
 
