@@ -8,6 +8,8 @@ use App\Models\Volunteer;
 use App\Models\Collection;
 use App\Models\Stock;
 use App\Models\Product;
+use App\Models\Distribution;
+use App\Models\Beneficiary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -281,5 +283,62 @@ class UsersManagementController extends Controller
             'message' => 'Product created',
             'product' => $product
         ];
+    }
+
+
+    /*  ------------------------- Distributions ------------------------------- */
+
+    public function all_distributions()
+    {
+        return Distribution::all();
+    }
+
+    public function get_distribution($id)
+    {
+        $distribution = Distribution::find($id);
+        if($distribution)
+        {   
+            return [
+                'message' => 'distribution found',
+                'distribution' => $distribution
+            ];
+        }
+        else
+        {
+            return response([
+                'message' => 'distribution not found'
+            ], 404);
+        }
+    }
+
+    public function create_distribution()
+    {
+
+    }
+
+
+    /*  ------------------------- Beneficiaries ------------------------------- */
+
+    public function all_beneficiaries()
+    {
+        return Beneficiary::all();
+    }
+
+    public function get_beneficiary($id)
+    {
+        $beneficiary = Beneficiary::find($id);
+        if($beneficiary)
+        {   
+            return [
+                'message' => 'beneficiary found',
+                'beneficiary' => $beneficiary
+            ];
+        }
+        else
+        {
+            return response([
+                'message' => 'beneficiary not found'
+            ], 404);
+        }
     }
 }

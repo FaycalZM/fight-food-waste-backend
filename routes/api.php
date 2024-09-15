@@ -57,6 +57,13 @@ Route::get('admin/all_products', [\App\Http\Controllers\UsersManagementControlle
 Route::get('admin/products/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_product']);
 Route::post('admin/add_product', [\App\Http\Controllers\UsersManagementController::class, 'create_product']);
 
+Route::get('admin/all_distributions', [\App\Http\Controllers\UsersManagementController::class, 'all_distributions']);
+Route::get('admin/distributions/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_distribution']);
+
+Route::get('admin/all_beneficiaries', [\App\Http\Controllers\UsersManagementController::class, 'all_beneficiaries']);
+Route::get('admin/beneficiaries/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_beneficiary']);
+
+
 
 // protected routes
 Route::middleware('auth:sanctum')->group(function () {
