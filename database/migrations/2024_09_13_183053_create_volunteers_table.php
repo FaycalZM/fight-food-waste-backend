@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email');
-            $table->string('contact_info');
-            $table->string('address');
+            $table->string('contact_info')->nullable(true);
+            $table->string('address')->nullable(true);
             $table->unsignedBigInteger('skill_id');
             $table->integer('availability_start');
             $table->integer('availability_end');
