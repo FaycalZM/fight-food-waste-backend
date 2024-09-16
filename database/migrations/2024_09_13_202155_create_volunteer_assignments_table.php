@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('volunteer_assignments', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('schedule_id');
             $table->enum('task_type', ['Collection', 'Distribution', 'Plumber', 'Cook', 'Driver', 'Mechanic'])->default('Collection');
             $table->dateTime('start_time');
-            $table->dateTime('end_time');
+            $table->dateTime('end_time')->nullable();
             $table->enum('assignment_status', ['Assigned', 'In_Progress', 'Completed'])->default('Assigned');
             $table->timestamps();
 

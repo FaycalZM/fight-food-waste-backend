@@ -81,6 +81,13 @@ Route::post('admin/distributions/{id}/pdf', [\App\Http\Controllers\UsersManageme
 Route::get('admin/all_beneficiaries', [\App\Http\Controllers\UsersManagementController::class, 'all_beneficiaries']);
 Route::get('admin/beneficiaries/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_beneficiary']);
 
+
+
+Route::post('merchant/{id}/service', [\App\Http\Controllers\UsersManagementController::class, 'request_service']);
+
+
+Route::get('volunteer/{id}/schedule', [\App\Http\Controllers\UsersManagementController::class, 'get_schedule']);
+
 // protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('auth:admin')->post('admin/logout', [\App\Http\Controllers\AdminAuthController::class, 'logout']);

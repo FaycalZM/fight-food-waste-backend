@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Skill;
 use App\Models\Volunteer;
+use App\Models\VolunteerSchedule;
+use App\Models\VolunteerAssignment;
 use App\Models\Collection;
 use App\Models\Stock;
 use App\Models\Product;
@@ -16,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 class UsersManagementController extends Controller
 {
@@ -100,7 +103,7 @@ class UsersManagementController extends Controller
         }
     }
 
-    public function request_service(Request $request)
+    public function request_service($id, Request $request)
     {
         $fields = $request->validate([
             'task_type' => 'required',
@@ -108,13 +111,41 @@ class UsersManagementController extends Controller
         ]);
 
         $start_hour = Carbon::parse($request->start_time)->hour;
-        $possible_volunteers = Volunteer::where('availability_start', '<=', $start_hour)
-            ->where('availability_end', '>', $start_hour)
-            ->get();
-        return $possible_volunteers;
-    }
+        $possible_volunteers = Volunteer::where('availability_start', '<=', $start_hour )
+                                        ->where('availability_end', '>', $start_hour)
+                                        ->get();
+        
+        $pool_of_choice = [];
+        foreach($possible_volunteers as $volunteer)
+        {
+            $skill = Skill::find($volunteer->skill_id);
+            if($skill->name == $request->task_type)
+            {
+                $pool_of_choice[] = $volunteer;
+            }
+        }
 
-    public function subscription_reminder() {}
+        //print_r($possible_volunteers);
+        $chosen_volunteer = Arr::random($pool_of_choice);
+        $schedule = VolunteerSchedule::create([
+            'volunteer_id' => $chosen_volunteer->id,
+            'schedule_day' => date('Y-m-d'),
+            'schedule_status' => "Planned"
+        ]);
+
+        $assignment = VolunteerAssignment::create([
+            'user_id' => $id,
+            'schedule_id' => $schedule->id,
+            'task_type' => "Plumber",//$request->task_type,
+            'start_time' => $request->start_time,
+            'assignment_status' => 'Assigned'
+        ]);
+
+        return [
+            'message' => 'Service requested, volunteer selected',
+            'volunteer' => $chosen_volunteer
+        ];
+    }
 
 
     /*  ------------------------- Skills ------------------------------- */
@@ -216,6 +247,29 @@ class UsersManagementController extends Controller
                 'message' => 'Volunteer not found'
             ], 404);
         }
+    }
+
+    public function get_schedule($id)
+    {
+        $schedule = VolunteerSchedule::where('volunteer_id', $id)
+                                     ->where('schedule_day', date('Y-m-d'))
+                                     ->first();
+        if($schedule)
+        {
+            $assignments = VolunteerAssignment::where('schedule_id', $schedule->id)->get();
+            return [
+                'message' => 'Schedule found',
+                'schedule' => $schedule,
+                'assignments' => $assignments
+            ];
+        }
+        else
+        {
+            return [
+                'message' => 'No schedule found today'
+            ];
+        }
+         
     }
 
 
@@ -473,16 +527,9 @@ class UsersManagementController extends Controller
             'stock_id' => 'required|integer'
         ]);
 
-        $quantity = $request->validate([
-            'quantity' => 'required|integer',
-        ]);
-        for ($i = 0; $i < $quantity; $i++) {
-            $product = Product::create($fields);
-        }
         return [
             'message' => 'Product created',
-            'product' => $product,
-            'quantity' => $quantity
+            'product' => $product
         ];
     }
 
