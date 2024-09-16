@@ -14,7 +14,7 @@ use App\Models\DistributionBeneficiary;
 use App\Models\DistributionProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 class UsersManagementController extends Controller
@@ -108,9 +108,9 @@ class UsersManagementController extends Controller
         ]);
 
         $start_hour = Carbon::parse($request->start_time)->hour;
-        $possible_volunteers = Volunteer::where('availability_start', '<=', $start_hour )
-                                        ->where('availability_end', '>', $start_hour)
-                                        ->get();
+        $possible_volunteers = Volunteer::where('availability_start', '<=', $start_hour)
+            ->where('availability_end', '>', $start_hour)
+            ->get();
         return $possible_volunteers;
     }
 
@@ -230,9 +230,10 @@ class UsersManagementController extends Controller
     {
         $collection = Collection::find($id);
         if ($collection) {
+            $collection['products'] = $collection->products;
             return [
                 'message' => 'collection found',
-                'collection' => $collection
+                'collection' => $collection,
             ];
         } else {
             return response([
@@ -263,7 +264,7 @@ class UsersManagementController extends Controller
         $collection = Collection::find($id);
         if ($collection) {
             $collection->update([
-                'status' => 'In Progress'
+                'collection_status' => 'In Progress'
             ]);
 
             return [
@@ -282,7 +283,7 @@ class UsersManagementController extends Controller
         $collection = Collection::find($id);
         if ($collection) {
             $collection->update([
-                'status' => 'Completed'
+                'collection_status' => 'Completed'
             ]);
             return [
                 'message' => 'Collection closed',
@@ -303,6 +304,40 @@ class UsersManagementController extends Controller
             return [
                 'message' => 'Collection deleted',
                 'collection' => $collection
+            ];
+        } else {
+            return response([
+                'message' => 'Collection not found'
+            ], 404);
+        }
+    }
+
+    public function add_product_to_collection(Request $request, $id)
+    {
+        $collection = Collection::find($id);
+        if ($collection) {
+            $fields = $request->validate([
+                'product_name' => 'required|string',
+                'barcode' => 'nullable',
+                'category' => 'nullable',
+                'expiration_date' => 'nullable',
+                'user_id' => 'required|integer',
+                'stock_id' => 'required|integer',
+                'quantity_collected' => 'required|integer',
+            ]);
+
+            $quantity = $fields['quantity_collected'];
+            unset($fields['quantity_collected']);
+
+            $product = Product::create($fields);
+            $collection->products()->create([
+                'product_id' => $product['id'],
+                'quantity_collected' => $quantity,
+            ]);
+            return [
+                'message' => "$quantity entries of {$product->product_name} added to collection",
+                'collection' => $collection,
+                'product' => $product,
             ];
         } else {
             return response([
@@ -332,7 +367,6 @@ class UsersManagementController extends Controller
         $pdf = PDF::loadView('collection_report', $data);
         $report_name = "Collection_" . $collection->scheduled_time . "_report.pdf";
         return $pdf->download($report_name);
-        
     }
 
 
@@ -442,8 +476,7 @@ class UsersManagementController extends Controller
         $quantity = $request->validate([
             'quantity' => 'required|integer',
         ]);
-        for ($i=0; i < $quantity; $i++)
-        {
+        for ($i = 0; $i < $quantity; $i++) {
             $product = Product::create($fields);
         }
         return [
@@ -518,11 +551,11 @@ class UsersManagementController extends Controller
 
     public function generate_distribution_report($id, Request $request)
     {
-        $request->validate([
-            'products' => 'required',
-            'beneficiaries_ids' => 'required',
-            'quantities' => 'required'
-        ]);
+        // $request->validate([
+        //     'products' => 'required',
+        //     'beneficiaries_ids' => 'required',
+        //     'quantities' => 'required'
+        // ]);
 
         $beneficiaries_ids = $request->beneficiaries_ids; //array of beneficiary ids
         $products = $request->products; //array of product names
@@ -538,7 +571,6 @@ class UsersManagementController extends Controller
         $pdf = PDF::loadView('distribution_report', $data);
         $report_name = "Distribution_" . $distribution->scheduled_time . "_report.pdf";
         return $pdf->download($report_name);
-        
     }
 
     /*  ------------------------- Beneficiaries ------------------------------- */

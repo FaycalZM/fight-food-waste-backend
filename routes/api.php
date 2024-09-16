@@ -55,6 +55,8 @@ Route::post('admin/add_collection', [\App\Http\Controllers\UsersManagementContro
 Route::get('admin/collections/{id}/start', [\App\Http\Controllers\UsersManagementController::class, 'start_collection']);
 Route::get('admin/collections/{id}/close', [\App\Http\Controllers\UsersManagementController::class, 'close_collection']);
 Route::get('admin/collections/{id}/delete', [\App\Http\Controllers\UsersManagementController::class, 'delete_collection']);
+Route::post('admin/collections/{id}/products/add', [\App\Http\Controllers\UsersManagementController::class, 'add_product_to_collection']);
+
 Route::post('admin/collections/{id}/pdf', [\App\Http\Controllers\UsersManagementController::class, 'generate_collection_report']);
 
 
@@ -62,7 +64,6 @@ Route::get('admin/all_stocks', [\App\Http\Controllers\UsersManagementController:
 Route::get('admin/stocks/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_stock']);
 Route::post('admin/add_stock', [\App\Http\Controllers\UsersManagementController::class, 'create_stock']);
 Route::get('admin/stocks/{id}/search', [\App\Http\Controllers\UsersManagementController::class, 'find_product']);
-Route::post('admin/stocks/{id}/products/add', [\App\Http\Controllers\UsersManagementController::class, 'add_product_to_stock']);
 
 
 
