@@ -142,7 +142,7 @@ class UsersManagementController extends Controller
 
     public function delete_volunteer($id)
     {
-        $volunteer = User::find($id);
+        $volunteer = Volunteer::find($id);
         if ($volunteer) {
             $volunteer->delete();
             return [
@@ -232,7 +232,6 @@ class UsersManagementController extends Controller
             'scheduled_time' => 'required',
             'volunteers_count' => 'required',
             'route' => 'required|string',
-            'collection_status' => 'required|string'
         ]);
 
         $collection = Collection::create($fields);
@@ -241,6 +240,59 @@ class UsersManagementController extends Controller
             'message' => 'Collection created',
             'collection' => $collection
         ];
+    }
+
+    public function start_collection($id)
+    {
+        $collection = Collection::find($id);
+        if ($collection) {
+            $collection->update([
+                'status' => 'In Progress'
+            ]);
+
+            return [
+                'message' => 'Collection started',
+                'collection' => $collection
+            ];
+        } else {
+            return response([
+                'message' => 'Collection not found'
+            ], 404);
+        }
+    }
+
+    public function close_collection($id)
+    {
+        $collection = Collection::find($id);
+        if ($collection) {
+            $collection->update([
+                'status' => 'Completed'
+            ]);
+            return [
+                'message' => 'Collection closed',
+                'collection' => $collection
+            ];
+        } else {
+            return response([
+                'message' => 'Collection not found'
+            ], 404);
+        }
+    }
+
+    public function delete_collection($id)
+    {
+        $collection = Collection::find($id);
+        if ($collection) {
+            $collection->delete();
+            return [
+                'message' => 'Collection deleted',
+                'collection' => $collection
+            ];
+        } else {
+            return response([
+                'message' => 'Collection not found'
+            ], 404);
+        }
     }
 
     /*  ------------------------- Stocks ------------------------------- */
@@ -270,6 +322,7 @@ class UsersManagementController extends Controller
             $products = [];
             foreach ($stock->products as $product) {
                 $products[] = [
+                    'id' => $product->id,
                     'product' => $product->product_name,
                     'quantity' => $this->get_product_quantity($id, $product->product_name)
                 ];
@@ -317,6 +370,8 @@ class UsersManagementController extends Controller
             'stock' => $stock
         ];
     }
+
+
 
     /*  ------------------------- Products ------------------------------- */
     public function all_products()

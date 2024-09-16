@@ -51,12 +51,17 @@ Route::get('admin/volunteers/{id}/delete', [\App\Http\Controllers\UsersManagemen
 Route::get('admin/all_collections', [\App\Http\Controllers\UsersManagementController::class, 'all_collections']);
 Route::get('admin/collections/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_collection']);
 Route::post('admin/add_collection', [\App\Http\Controllers\UsersManagementController::class, 'create_collection']);
+Route::get('admin/collections/{id}/start', [\App\Http\Controllers\UsersManagementController::class, 'start_collection']);
+Route::get('admin/collections/{id}/close', [\App\Http\Controllers\UsersManagementController::class, 'close_collection']);
+Route::get('admin/collections/{id}/delete', [\App\Http\Controllers\UsersManagementController::class, 'delete_collection']);
 
 
 Route::get('admin/all_stocks', [\App\Http\Controllers\UsersManagementController::class, 'all_stocks']);
 Route::get('admin/stocks/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_stock']);
 Route::post('admin/add_stock', [\App\Http\Controllers\UsersManagementController::class, 'create_stock']);
 Route::get('admin/stocks/{id}/search', [\App\Http\Controllers\UsersManagementController::class, 'find_product']);
+Route::post('admin/stocks/{id}/products/add', [\App\Http\Controllers\UsersManagementController::class, 'add_product_to_stock']);
+
 
 
 Route::get('admin/all_products', [\App\Http\Controllers\UsersManagementController::class, 'all_products']);
