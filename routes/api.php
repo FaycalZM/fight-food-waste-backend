@@ -57,7 +57,7 @@ Route::get('admin/collections/{id}/close', [\App\Http\Controllers\UsersManagemen
 Route::get('admin/collections/{id}/delete', [\App\Http\Controllers\UsersManagementController::class, 'delete_collection']);
 Route::post('admin/collections/{id}/products/add', [\App\Http\Controllers\UsersManagementController::class, 'add_product_to_collection']);
 
-Route::post('admin/collections/{id}/pdf', [\App\Http\Controllers\UsersManagementController::class, 'generate_collection_report']);
+Route::get('admin/collections/{id}/pdf', [\App\Http\Controllers\UsersManagementController::class, 'generate_collection_report']);
 
 
 Route::get('admin/all_stocks', [\App\Http\Controllers\UsersManagementController::class, 'all_stocks']);
@@ -79,7 +79,7 @@ Route::get('admin/distributions/{id}/start', [\App\Http\Controllers\UsersManagem
 Route::get('admin/distributions/{id}/close', [\App\Http\Controllers\UsersManagementController::class, 'close_distribution']);
 Route::get('admin/distributions/{id}/delete', [\App\Http\Controllers\UsersManagementController::class, 'delete_distribution']);
 
-Route::post('admin/distributions/{id}/pdf', [\App\Http\Controllers\UsersManagementController::class, 'generate_distribution_report']);
+Route::get('admin/distributions/{id}/pdf', [\App\Http\Controllers\UsersManagementController::class, 'generate_distribution_report']);
 
 
 Route::get('admin/all_beneficiaries', [\App\Http\Controllers\UsersManagementController::class, 'all_beneficiaries']);
@@ -90,7 +90,7 @@ Route::get('admin/beneficiaries/{id}', [\App\Http\Controllers\UsersManagementCon
 Route::post('merchant/{id}/service', [\App\Http\Controllers\UsersManagementController::class, 'request_service']);
 
 
-Route::get('volunteer/{id}/schedule', [\App\Http\Controllers\UsersManagementController::class, 'get_schedule']);
+Route::get('volunteer/{id}/schedule', [\App\Http\Controllers\UsersManagementController::class, 'get_today_schedule']);
 Route::get('volunteer/{id}/all_schedules', [\App\Http\Controllers\UsersManagementController::class, 'get_all_schedules']);
 
 // protected routes

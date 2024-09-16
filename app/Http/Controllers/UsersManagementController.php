@@ -136,14 +136,14 @@ class UsersManagementController extends Controller
             $chosen_volunteer = Arr::random($pool_of_choice);
             $schedule = VolunteerSchedule::create([
                 'volunteer_id' => $chosen_volunteer->id,
-                'schedule_day' => (new DateTime($request->start_time))->format("Y-m-d   "),
+                'schedule_day' => (new DateTime($request->start_time))->format("Y-m-d"),
                 'schedule_status' => "Planned"
             ]);
 
             $assignment = VolunteerAssignment::create([
                 'user_id' => $id,
                 'schedule_id' => $schedule->id,
-                'task_type' => "Plumber", //$request->task_type,
+                'task_type' => $request->task_type,
                 'start_time' => $request->start_time,
                 'assignment_status' => 'Assigned'
             ]);
@@ -343,24 +343,22 @@ class UsersManagementController extends Controller
         if (count($pool_of_choice) > 0) {
             $chosen_volunteer = Arr::random($pool_of_choice);
             $schedule = VolunteerSchedule::where('volunteer_id', $chosen_volunteer->id)
-                                         ->where('schedule_day', (new DateTime($start_time))->format("Y-m-d"))
-                                         ->first();
-            if(!$schedule)
-            {
+                ->where('schedule_day', (new DateTime($start_time))->format("Y-m-d"))
+                ->first();
+            if (!$schedule) {
                 $schedule = VolunteerSchedule::create([
                     'volunteer_id' => $chosen_volunteer->id,
                     'schedule_day' => (new DateTime($start_time))->format("Y-m-d"),
                     'schedule_status' => "Planned"
                 ]);
-    
+
                 $assignment = VolunteerAssignment::create([
                     'schedule_id' => $schedule->id,
                     'task_type' => $type,
                     'start_time' => $start_time,
                     'assignment_status' => 'Assigned'
                 ]);
-            } else 
-            {
+            } else {
                 $assignment = VolunteerAssignment::create([
                     'schedule_id' => $schedule->id,
                     'task_type' => $type,
@@ -406,8 +404,7 @@ class UsersManagementController extends Controller
 
         $collection = Collection::create($fields);
 
-        for($i=0; $i < $collection->volunteers_count; $i++)
-        {
+        for ($i = 0; $i < $collection->volunteers_count; $i++) {
             $this->recruit_volunteer("Collection", $request->scheduled_time);
         }
 
@@ -506,16 +503,19 @@ class UsersManagementController extends Controller
 
     public function generate_collection_report($id, Request $request)
     {
-        $request->validate([
-            'nb_volunteers' => 'required|integer',
-            'products' => 'required',
-            'quantities' => 'required'
-        ]);
-
-        $products = $request->products; // array of product names (strings)
-        $quantities = $request->quantities; // array of quantity of each product (ints)
-        $nb_volunteers = $request->nb_volunteers;
         $collection = Collection::find($id);
+        $productsCollected = $collection->products;
+        // Get collected product IDs using Laravel's map()
+        $products = $productsCollected->map(function ($product) {
+            $productData = Product::find($product->product_id);
+            return $productData->product_name;
+        })->toArray();
+
+        // Get the corresponding quantities using Laravel's map()
+        $quantities = $productsCollected->map(function ($product) {
+            return $product->quantity_collected;
+        })->toArray();
+        $nb_volunteers = $collection->volunteers_count;
         $data = [
             'nb_volunteers' => $nb_volunteers,
             'collection' => $collection,
@@ -676,7 +676,6 @@ class UsersManagementController extends Controller
         $distribution = Distribution::create([
             'scheduled_time' => $request->scheduled_time,
             'route' => $request->route,
-            'distribution_status' => 'Scheduled',
             'volunteers_count' => $request->volunteers_count,
         ]);
 
@@ -696,8 +695,7 @@ class UsersManagementController extends Controller
             ]);
         };
 
-        for($i=0; $i < $distribution->volunteers_count; $i++)
-        {
+        for ($i = 0; $i < $distribution->volunteers_count; $i++) {
             $this->recruit_volunteer("Distribution", $request->scheduled_time);
         }
 
@@ -757,18 +755,26 @@ class UsersManagementController extends Controller
     }
 
 
-    public function generate_distribution_report($id, Request $request)
+    public function generate_distribution_report($id)
     {
-        // $request->validate([
-        //     'products' => 'required',
-        //     'beneficiaries_ids' => 'required',
-        //     'quantities' => 'required'
-        // ]);
+        $distribution = Distribution::with(['beneficiaries', 'products'])->find($id);
 
-        $beneficiaries_ids = $request->beneficiaries_ids; //array of beneficiary ids
-        $products = $request->products; //array of product names
-        $quantities = $request->quantities; //array of products' quantities
-        $distribution = Distribution::find($id);
+        $productsDistributed = $distribution->products;
+        $beneficiaries = $distribution->beneficiaries;
+        // Get distributed product IDs using Laravel's map()
+        $products = $productsDistributed->map(function ($product) {
+            return $product->product_name;
+        })->toArray();
+        // Get the corresponding quantities using Laravel's map()
+        $quantities = $productsDistributed->map(function ($product) {
+            return $product->pivot->quantity_distributed;
+        })->toArray();
+
+        $beneficiaries_ids = $beneficiaries->map(function ($beneficiary) {
+            return $beneficiary->id;
+        })->toArray();
+
+
         $data = [
             'distribution' => $distribution,
             'products' => $products,
