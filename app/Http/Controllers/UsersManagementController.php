@@ -116,16 +116,23 @@ class UsersManagementController extends Controller
                                         ->where('availability_end', '>', $start_hour)
                                         ->get();
 
-        $pool_of_choice = [];
+        $possible_volunteers_ = [];
         foreach ($possible_volunteers as $volunteer) {
             $skill = Skill::find($volunteer->skill_id);
             if ($skill->name == $request->task_type) {
-                $pool_of_choice[] = $volunteer;
+                $possible_volunteers_[] = $volunteer;
             }
         }
 
+        $pool_of_choice = [];
+        foreach ($possible_volunteers_ as $volunteer) {
+            if ($this->volunteer_is_available($volunteer->id, $request->start_time)) {
+                $pool_of_choice[] = $volunteer;
+            }   
+        }
+
         //print_r($possible_volunteers);
-        if(count($pool_of_service) > 0)
+        if(count($pool_of_choice) > 0)
         {
             $chosen_volunteer = Arr::random($pool_of_choice);
             $schedule = VolunteerSchedule::create([
@@ -303,6 +310,27 @@ class UsersManagementController extends Controller
         }
     }
 
+    public function volunteer_is_available($id, $dateTime)
+    {
+        $volunteer = Volunteer::find($id);
+        $schedules = VolunteerSchedule::where('volunteer_id', $id)->get();
+        foreach($schedules as $schedule)
+        {
+            $assignments = VolunteerAssignment::where('schedule_id', $schedule->id)->get();
+            foreach($assignments as $assignment)
+            {
+                $interval = (new DateTime($assignment->start_time))->diff(new DateTime($dateTime));
+                $hoursDifference = ($interval->days * 24) + $interval->h;
+                if ($interval->invert) {
+                    $hoursDifference = -$hoursDifference;
+                }
+                if(abs($hoursDifference) < 2){
+                    return False;
+                }
+            }
+        }
+        return True;
+    }
 
     /*  ------------------------- Collections ------------------------------- */
 
