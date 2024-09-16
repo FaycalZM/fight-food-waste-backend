@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return 'hello world';
-});             
+});
 
 
 // merchant auth
@@ -31,7 +31,9 @@ Route::post('admin/login', [\App\Http\Controllers\AdminAuthController::class, 'l
 // admin READs
 Route::get('admin/all_merchants', [\App\Http\Controllers\UsersManagementController::class, 'all_users']);
 Route::get('admin/merchants/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_user']);
-Route::get('admin/merchants/{id}/approve_membership', [\App\Http\Controllers\UsersManagementController::class, 'approve_subscription']);
+Route::get('admin/merchants/{id}/approve_membership', [\App\Http\Controllers\UsersManagementController::class, 'approve_merchant_subscription']);
+Route::get('admin/merchants/{id}/reject_subscription', [\App\Http\Controllers\UsersManagementController::class, 'reject_merchant_subscription']);
+Route::get('admin/merchants/{id}/delete', [\App\Http\Controllers\UsersManagementController::class, 'delete_merchant']);
 
 
 Route::get('admin/all_skills', [\App\Http\Controllers\UsersManagementController::class, 'all_skills']);
@@ -40,6 +42,10 @@ Route::get('admin/skills/{id}', [\App\Http\Controllers\UsersManagementController
 
 Route::get('admin/all_volunteers', [\App\Http\Controllers\UsersManagementController::class, 'all_volunteers']);
 Route::get('admin/volunteers/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_volunteer']);
+Route::get('admin/volunteers/{id}/approve_membership', [\App\Http\Controllers\UsersManagementController::class, 'approve_volunteer_subscription']);
+Route::get('admin/volunteers/{id}/reject_subscription', [\App\Http\Controllers\UsersManagementController::class, 'reject_volunteer_subscription']);
+Route::get('admin/volunteers/{id}/delete', [\App\Http\Controllers\UsersManagementController::class, 'delete_volunteer']);
+
 
 
 Route::get('admin/all_collections', [\App\Http\Controllers\UsersManagementController::class, 'all_collections']);
