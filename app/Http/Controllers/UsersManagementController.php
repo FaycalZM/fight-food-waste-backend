@@ -368,7 +368,7 @@ class UsersManagementController extends Controller
                     'assignment_status' => 'Assigned'
                 ]);
             }
-            echo $chosen_volunteer->id;
+            //echo $chosen_volunteer->id;
         }
     }
 
