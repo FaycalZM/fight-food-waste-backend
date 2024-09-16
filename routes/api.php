@@ -73,6 +73,7 @@ Route::post('admin/add_product', [\App\Http\Controllers\UsersManagementControlle
 Route::get('admin/all_distributions', [\App\Http\Controllers\UsersManagementController::class, 'all_distributions']);
 Route::get('admin/distributions/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_distribution']);
 Route::post('admin/add_distribution', [\App\Http\Controllers\UsersManagementController::class, 'create_distribution']);
+Route::post('admin/distributions/{id}/pdf', [\App\Http\Controllers\UsersManagementController::class, 'generate_distribution_report']);
 
 
 Route::get('admin/all_beneficiaries', [\App\Http\Controllers\UsersManagementController::class, 'all_beneficiaries']);

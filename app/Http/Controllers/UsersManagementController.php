@@ -298,8 +298,14 @@ class UsersManagementController extends Controller
 
     public function generate_collection_report($id, Request $request)
     {
-        $products = $request->products;
-        $quantities = $request->quantities;
+        $request->validate([
+            'nb_volunteers' => 'required|integer',
+            'products' => 'required',
+            'quantities' => 'required'
+        ]);
+
+        $products = $request->products; // array of product names (strings)
+        $quantities = $request->quantities; // array of quantity of each product (ints)
         $nb_volunteers = $request->nb_volunteers;
         $collection = Collection::find($id);
         $data = [
@@ -313,6 +319,8 @@ class UsersManagementController extends Controller
         return $pdf->download($report_name);
         
     }
+
+
     /*  ------------------------- Stocks ------------------------------- */
     public function all_stocks()
     {
@@ -481,7 +489,7 @@ class UsersManagementController extends Controller
             $distribution_product = DistributionProduct::create([
                 'distribution_id' => $distribution->id,
                 'product_id' => $product_id,
-                'quantity_distributed' => 0
+                'quantity_distributed' => 0,
             ]);
         };
 
@@ -492,6 +500,31 @@ class UsersManagementController extends Controller
         ];
     }
 
+
+    public function generate_distribution_report($id, Request $request)
+    {
+        $request->validate([
+            'products' => 'required',
+            'beneficiaries_ids' => 'required',
+            'quantities' => 'required'
+        ]);
+
+        $beneficiaries_ids = $request->beneficiaries_ids; //array of beneficiary ids
+        $products = $request->products; //array of product names
+        $quantities = $request->quantities; //array of products' quantities
+        $distribution = Distribution::find($id);
+        $data = [
+            'distribution' => $distribution,
+            'products' => $products,
+            'quantities' => $quantities,
+            'beneficiaries_ids' => $beneficiaries_ids,
+        ];
+
+        $pdf = PDF::loadView('distribution_report', $data);
+        $report_name = "Distribution_" . $distribution->scheduled_time . "_report.pdf";
+        return $pdf->download($report_name);
+        
+    }
 
     /*  ------------------------- Beneficiaries ------------------------------- */
 
