@@ -15,6 +15,7 @@ use App\Models\DistributionProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use PDF;
+use Carbon\Carbon;
 
 class UsersManagementController extends Controller
 {
@@ -97,6 +98,20 @@ class UsersManagementController extends Controller
                 'message' => 'User not found'
             ], 404);
         }
+    }
+
+    public function request_service(Request $request)
+    {
+        $fields = $request->validate([
+            'task_type' => 'required',
+            'start_time' => 'required',
+        ]);
+
+        $start_hour = Carbon::parse($request->start_time)->hour;
+        $possible_volunteers = Volunteer::where('availability_start', '<=', $start_hour )
+                                        ->where('availability_end', '>', $start_hour)
+                                        ->get();
+        return $possible_volunteers;
     }
 
     public function subscription_reminder() {}

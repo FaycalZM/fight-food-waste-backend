@@ -34,6 +34,7 @@ Route::get('admin/merchants/{id}', [\App\Http\Controllers\UsersManagementControl
 Route::get('admin/merchants/{id}/approve_membership', [\App\Http\Controllers\UsersManagementController::class, 'approve_merchant_subscription']);
 Route::get('admin/merchants/{id}/reject_subscription', [\App\Http\Controllers\UsersManagementController::class, 'reject_merchant_subscription']);
 Route::get('admin/merchants/{id}/delete', [\App\Http\Controllers\UsersManagementController::class, 'delete_merchant']);
+Route::get('merchant/request', [\App\Http\Controllers\UsersManagementController::class, 'request_service']);
 
 
 Route::get('admin/all_skills', [\App\Http\Controllers\UsersManagementController::class, 'all_skills']);
