@@ -10,6 +10,8 @@ use App\Models\Stock;
 use App\Models\Product;
 use App\Models\Distribution;
 use App\Models\Beneficiary;
+use App\Models\DistributionBeneficiary;
+use App\Models\DistributionProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -311,9 +313,45 @@ class UsersManagementController extends Controller
         }
     }
 
-    public function create_distribution()
+    public function create_distribution(Request $request)
     {
+        $fields = $request->validate([
+            'beneficiary_ids' => 'required', // an array
+            'product_ids' => 'required', // an array
+            'scheduled_time' => 'required',
+            'route' => 'required|string',
+            'distribution_status' => 'required|string'
+        ]);
 
+        $distribution = Distribution::create([
+            'scheduled_time' => $request->scheduled_time,
+            'route' => $request->route,
+            'distribution_status' => $request->distribution_status
+        ]);
+
+        $distribution->refresh();
+        foreach($request->beneficiary_ids as $beneficiary_id) 
+        {
+            $distribution_beneficiary = DistributionBeneficiary::create([
+                'distribution_id' => $distribution->id,
+                'beneficiary_id' => $beneficiary_id,
+            ]);
+        };
+
+        foreach($request->product_ids as $product_id) 
+        {
+            $distribution_product = DistributionProduct::create([
+                'distribution_id' => $distribution->id,
+                'product_id' => $product_id,
+                'quantity_distributed' => 0
+            ]);
+        };
+
+
+        return [
+            'message' => 'distribution created',
+            'distribution' => $distribution
+        ];
     }
 
 
@@ -341,4 +379,5 @@ class UsersManagementController extends Controller
             ], 404);
         }
     }
+
 }

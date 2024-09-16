@@ -22,7 +22,7 @@ class Distribution extends Model
 
     public function products()
     {
-        return $this->hasMany(DistributionProduct::class, 'distribution_id');
+        return $this->hasMany(DistributionProduct::class, 'distribution_id');   
     }
 
     public function report()
