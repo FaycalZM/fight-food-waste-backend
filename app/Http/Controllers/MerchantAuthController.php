@@ -41,7 +41,11 @@ class MerchantAuthController extends Controller
                 'message' => 'Invalid credentials'
             ], 401);
         }
-
+        if ($user->membership_status != 'active') {
+            return response([
+                'message' => 'Membership not approved or expired'
+            ], 401);
+        }
         return [
             'User' => $user,
             'token' => $user->createToken($user->name)->plainTextToken
