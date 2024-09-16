@@ -25,6 +25,7 @@ class DistributionSeeder extends Seeder
                 'scheduled_time' => date('Y-m-d H', $randomTimestamp),
                 'route' => Str::random(5) . "," . Str::random(5) . "," . Str::random(5),
                 'distribution_status' => "Scheduled",
+                'volunteers_count' => $i,
             ]);
         }
     }

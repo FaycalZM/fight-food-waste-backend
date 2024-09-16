@@ -261,7 +261,7 @@ class UsersManagementController extends Controller
         }
     }
 
-    public function get_today_schedule($id)
+    public function get_schedule($id)
     {
         $schedule = VolunteerSchedule::where('volunteer_id', $id)
             ->where('schedule_day', date('Y-m-d'))
@@ -324,6 +324,54 @@ class UsersManagementController extends Controller
         return True;
     }
 
+    public function recruit_volunteer($type, $start_time)
+    {
+
+        $start_hour = Carbon::parse($start_time)->hour;
+        $possible_volunteers = Volunteer::where('availability_start', '<=', $start_hour)
+            ->where('availability_end', '>', $start_hour)
+            ->get();
+
+        $pool_of_choice = [];
+        foreach ($possible_volunteers as $volunteer) {
+            if ($this->volunteer_is_available($volunteer->id, $start_time)) {
+                $pool_of_choice[] = $volunteer;
+            }
+        }
+
+        //print_r($possible_volunteers);
+        if (count($pool_of_choice) > 0) {
+            $chosen_volunteer = Arr::random($pool_of_choice);
+            $schedule = VolunteerSchedule::where('volunteer_id', $chosen_volunteer->id)
+                                         ->where('schedule_day', (new DateTime($start_time))->format("Y-m-d"))
+                                         ->first();
+            if(!$schedule)
+            {
+                $schedule = VolunteerSchedule::create([
+                    'volunteer_id' => $chosen_volunteer->id,
+                    'schedule_day' => (new DateTime($start_time))->format("Y-m-d"),
+                    'schedule_status' => "Planned"
+                ]);
+    
+                $assignment = VolunteerAssignment::create([
+                    'schedule_id' => $schedule->id,
+                    'task_type' => $type,
+                    'start_time' => $start_time,
+                    'assignment_status' => 'Assigned'
+                ]);
+            } else 
+            {
+                $assignment = VolunteerAssignment::create([
+                    'schedule_id' => $schedule->id,
+                    'task_type' => $type,
+                    'start_time' => $start_time,
+                    'assignment_status' => 'Assigned'
+                ]);
+            }
+            echo $chosen_volunteer->id;
+        }
+    }
+
     /*  ------------------------- Collections ------------------------------- */
 
     public function all_collections()
@@ -357,6 +405,11 @@ class UsersManagementController extends Controller
         ]);
 
         $collection = Collection::create($fields);
+
+        for($i=0; $i < $collection->volunteers_count; $i++)
+        {
+            $this->recruit_volunteer("Collection", $request->scheduled_time);
+        }
 
         return [
             'message' => 'Collection created',
@@ -616,12 +669,15 @@ class UsersManagementController extends Controller
             'beneficiary_ids' => 'required', // an array
             'product_ids' => 'required', // an array
             'scheduled_time' => 'required',
+            'volunteers_count' => 'required|int',
             'route' => 'required|string',
         ]);
 
         $distribution = Distribution::create([
             'scheduled_time' => $request->scheduled_time,
             'route' => $request->route,
+            'distribution_status' => 'Scheduled',
+            'volunteers_count' => $request->volunteers_count,
         ]);
 
         $distribution->refresh();
@@ -639,6 +695,11 @@ class UsersManagementController extends Controller
                 'quantity_distributed' => 0,
             ]);
         };
+
+        for($i=0; $i < $distribution->volunteers_count; $i++)
+        {
+            $this->recruit_volunteer("Distribution", $request->scheduled_time);
+        }
 
 
         return [
