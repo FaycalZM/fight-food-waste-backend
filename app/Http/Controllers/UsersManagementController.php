@@ -274,9 +274,9 @@ class UsersManagementController extends Controller
                 'assignments' => $assignments
             ];
         } else {
-            return [
+            return response([
                 'message' => 'No schedule found today'
-            ];
+            ], 404);
         }
     }
 
