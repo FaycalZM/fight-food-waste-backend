@@ -87,6 +87,7 @@ Route::post('merchant/{id}/service', [\App\Http\Controllers\UsersManagementContr
 
 
 Route::get('volunteer/{id}/schedule', [\App\Http\Controllers\UsersManagementController::class, 'get_schedule']);
+Route::get('volunteer/{id}/all_schedules', [\App\Http\Controllers\UsersManagementController::class, 'get_all_schedules']);
 
 // protected routes
 Route::middleware('auth:sanctum')->group(function () {

@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Support\Arr;
 
 class UsersManagementController extends Controller
@@ -112,8 +113,8 @@ class UsersManagementController extends Controller
 
         $start_hour = Carbon::parse($request->start_time)->hour;
         $possible_volunteers = Volunteer::where('availability_start', '<=', $start_hour)
-            ->where('availability_end', '>', $start_hour)
-            ->get();
+                                        ->where('availability_end', '>', $start_hour)
+                                        ->get();
 
         $pool_of_choice = [];
         foreach ($possible_volunteers as $volunteer) {
@@ -124,25 +125,35 @@ class UsersManagementController extends Controller
         }
 
         //print_r($possible_volunteers);
-        $chosen_volunteer = Arr::random($pool_of_choice);
-        $schedule = VolunteerSchedule::create([
-            'volunteer_id' => $chosen_volunteer->id,
-            'schedule_day' => date('Y-m-d'),
-            'schedule_status' => "Planned"
-        ]);
+        if(count($pool_of_service) > 0)
+        {
+            $chosen_volunteer = Arr::random($pool_of_choice);
+            $schedule = VolunteerSchedule::create([
+                'volunteer_id' => $chosen_volunteer->id,
+                'schedule_day' => (new DateTime($request->start_time))->format("Y-m-d   "),
+                'schedule_status' => "Planned"
+            ]);
+    
+            $assignment = VolunteerAssignment::create([
+                'user_id' => $id,
+                'schedule_id' => $schedule->id,
+                'task_type' => "Plumber", //$request->task_type,
+                'start_time' => $request->start_time,
+                'assignment_status' => 'Assigned'
+            ]);
+    
+            return [
+                'message' => 'Service requested, volunteer selected',
+                'volunteer' => $chosen_volunteer
+            ];
+        }
+        else
+        {
+            return [
+                'message' => 'No volunteer found for service'
+            ];
+        }
 
-        $assignment = VolunteerAssignment::create([
-            'user_id' => $id,
-            'schedule_id' => $schedule->id,
-            'task_type' => "Plumber", //$request->task_type,
-            'start_time' => $request->start_time,
-            'assignment_status' => 'Assigned'
-        ]);
-
-        return [
-            'message' => 'Service requested, volunteer selected',
-            'volunteer' => $chosen_volunteer
-        ];
     }
 
 
@@ -247,7 +258,7 @@ class UsersManagementController extends Controller
         }
     }
 
-    public function get_schedule($id)
+    public function get_today_schedule($id)
     {
         $schedule = VolunteerSchedule::where('volunteer_id', $id)
             ->where('schedule_day', date('Y-m-d'))
@@ -262,6 +273,32 @@ class UsersManagementController extends Controller
         } else {
             return [
                 'message' => 'No schedule found today'
+            ];
+        }
+    }
+
+    public function get_all_schedules($id)
+    {
+        $schedules = VolunteerSchedule::where('volunteer_id', $id)->get();
+        $list = [];
+        foreach($schedules as $schedule)
+        {
+            $assignments = VolunteerAssignment::where('schedule_id', $schedule->id)->get();
+            $list[] = [
+                'schedule' => $schedule,
+                'assignments' => $assignments
+            ];
+        }
+
+        if($list != []) {
+            return [
+                'message' => 'All schedules',
+                'schedules' => $list
+            ];
+        }
+        else {
+            return [
+                'message' => 'No schedule found'
             ];
         }
     }
@@ -521,8 +558,10 @@ class UsersManagementController extends Controller
             'stock_id' => 'required|integer'
         ]);
 
-        $product = Product::create($fields);
-
+        for ($i=0; i < $quantity; $i++)
+        {
+            $product = Product::create($fields);
+        }
         return [
             'message' => 'Product created',
             'product' => $product
