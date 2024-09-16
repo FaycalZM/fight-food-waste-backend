@@ -113,8 +113,8 @@ class UsersManagementController extends Controller
 
         $start_hour = Carbon::parse($request->start_time)->hour;
         $possible_volunteers = Volunteer::where('availability_start', '<=', $start_hour)
-                                        ->where('availability_end', '>', $start_hour)
-                                        ->get();
+            ->where('availability_end', '>', $start_hour)
+            ->get();
 
         $possible_volunteers_ = [];
         foreach ($possible_volunteers as $volunteer) {
@@ -128,19 +128,18 @@ class UsersManagementController extends Controller
         foreach ($possible_volunteers_ as $volunteer) {
             if ($this->volunteer_is_available($volunteer->id, $request->start_time)) {
                 $pool_of_choice[] = $volunteer;
-            }   
+            }
         }
 
         //print_r($possible_volunteers);
-        if(count($pool_of_choice) > 0)
-        {
+        if (count($pool_of_choice) > 0) {
             $chosen_volunteer = Arr::random($pool_of_choice);
             $schedule = VolunteerSchedule::create([
                 'volunteer_id' => $chosen_volunteer->id,
                 'schedule_day' => (new DateTime($request->start_time))->format("Y-m-d   "),
                 'schedule_status' => "Planned"
             ]);
-    
+
             $assignment = VolunteerAssignment::create([
                 'user_id' => $id,
                 'schedule_id' => $schedule->id,
@@ -148,19 +147,16 @@ class UsersManagementController extends Controller
                 'start_time' => $request->start_time,
                 'assignment_status' => 'Assigned'
             ]);
-    
+
             return [
                 'message' => 'Service requested, volunteer selected',
                 'volunteer' => $chosen_volunteer
             ];
-        }
-        else
-        {
+        } else {
             return [
                 'message' => 'No volunteer found for service'
             ];
         }
-
     }
 
 
@@ -288,8 +284,7 @@ class UsersManagementController extends Controller
     {
         $schedules = VolunteerSchedule::where('volunteer_id', $id)->get();
         $list = [];
-        foreach($schedules as $schedule)
-        {
+        foreach ($schedules as $schedule) {
             $assignments = VolunteerAssignment::where('schedule_id', $schedule->id)->get();
             $list[] = [
                 'schedule' => $schedule,
@@ -297,13 +292,12 @@ class UsersManagementController extends Controller
             ];
         }
 
-        if($list != []) {
+        if ($list != []) {
             return [
                 'message' => 'All schedules',
                 'schedules' => $list
             ];
-        }
-        else {
+        } else {
             return [
                 'message' => 'No schedule found'
             ];
@@ -314,17 +308,15 @@ class UsersManagementController extends Controller
     {
         $volunteer = Volunteer::find($id);
         $schedules = VolunteerSchedule::where('volunteer_id', $id)->get();
-        foreach($schedules as $schedule)
-        {
+        foreach ($schedules as $schedule) {
             $assignments = VolunteerAssignment::where('schedule_id', $schedule->id)->get();
-            foreach($assignments as $assignment)
-            {
+            foreach ($assignments as $assignment) {
                 $interval = (new DateTime($assignment->start_time))->diff(new DateTime($dateTime));
                 $hoursDifference = ($interval->days * 24) + $interval->h;
                 if ($interval->invert) {
                     $hoursDifference = -$hoursDifference;
                 }
-                if(abs($hoursDifference) < 2){
+                if (abs($hoursDifference) < 2) {
                     return False;
                 }
             }
@@ -586,10 +578,8 @@ class UsersManagementController extends Controller
             'stock_id' => 'required|integer'
         ]);
 
-        for ($i=0; i < $quantity; $i++)
-        {
-            $product = Product::create($fields);
-        }
+        $product = Product::create($fields);
+
         return [
             'message' => 'Product created',
             'product' => $product
@@ -606,7 +596,8 @@ class UsersManagementController extends Controller
 
     public function get_distribution($id)
     {
-        $distribution = Distribution::find($id);
+        $distribution = Distribution::with(['beneficiaries', 'products'])->find($id);
+
         if ($distribution) {
             return [
                 'message' => 'distribution found',
@@ -626,13 +617,11 @@ class UsersManagementController extends Controller
             'product_ids' => 'required', // an array
             'scheduled_time' => 'required',
             'route' => 'required|string',
-            'distribution_status' => 'required|string'
         ]);
 
         $distribution = Distribution::create([
             'scheduled_time' => $request->scheduled_time,
             'route' => $request->route,
-            'distribution_status' => $request->distribution_status
         ]);
 
         $distribution->refresh();
@@ -656,6 +645,54 @@ class UsersManagementController extends Controller
             'message' => 'distribution created',
             'distribution' => $distribution
         ];
+    }
+
+    public function start_distribution($id)
+    {
+        $distribution = Distribution::find($id);
+        if ($distribution) {
+            $distribution->update([
+                'distribution_status' => "In Progress"
+            ]);
+            return [
+                'message' => 'distribution started',
+                'distribution' => $distribution
+            ];
+        } else {
+            return response([
+                'message' => 'distribution not found'
+            ], 404);
+        }
+    }
+
+    public function close_distribution($id)
+    {
+        $distribution = Distribution::find($id);
+        if ($distribution) {
+            $distribution->update([
+                'distribution_status' => "Completed"
+            ]);
+            return [
+                'message' => 'distribution closed',
+                'distribution' => $distribution
+            ];
+        } else {
+            return response([
+                'message' => 'distribution not found'
+            ], 404);
+        }
+    }
+
+    public function delete_distribution($id)
+    {
+        $distribution = Distribution::find($id);
+        if ($distribution) {
+            $distribution->delete();
+        } else {
+            return response([
+                'message' => 'distribution not found'
+            ], 404);
+        }
     }
 
 

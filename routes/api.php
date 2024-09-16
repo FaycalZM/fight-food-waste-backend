@@ -75,6 +75,10 @@ Route::post('admin/add_product', [\App\Http\Controllers\UsersManagementControlle
 Route::get('admin/all_distributions', [\App\Http\Controllers\UsersManagementController::class, 'all_distributions']);
 Route::get('admin/distributions/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_distribution']);
 Route::post('admin/add_distribution', [\App\Http\Controllers\UsersManagementController::class, 'create_distribution']);
+Route::get('admin/distributions/{id}/start', [\App\Http\Controllers\UsersManagementController::class, 'start_distribution']);
+Route::get('admin/distributions/{id}/close', [\App\Http\Controllers\UsersManagementController::class, 'close_distribution']);
+Route::get('admin/distributions/{id}/delete', [\App\Http\Controllers\UsersManagementController::class, 'delete_distribution']);
+
 Route::post('admin/distributions/{id}/pdf', [\App\Http\Controllers\UsersManagementController::class, 'generate_distribution_report']);
 
 
