@@ -14,7 +14,11 @@ class VolunteerAuthController extends Controller
             'name' => 'required|string',
             'email' => 'required|string|unique:volunteers,email',
             'password' => 'required|string|confirmed',
-            'skill_id' => 'required|integer'
+            'skill_id' => 'required|integer',
+            'availability_start' => 'required|integer',
+            'availability_end' => 'required|integer',
+            'address' => 'nullable|string',
+            'contact_info' => 'nullable|string',
         ]);
 
         $volunteer = Volunteer::create($fields);

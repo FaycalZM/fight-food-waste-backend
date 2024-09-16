@@ -14,6 +14,8 @@ class MerchantAuthController extends Controller
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed',
+            'address' => 'nullable|string',
+            'contact_info' => 'nullable|string',
         ]);
 
         $user = User::create($fields);
