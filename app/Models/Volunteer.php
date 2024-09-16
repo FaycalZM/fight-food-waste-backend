@@ -20,6 +20,7 @@ class Volunteer extends Authenticatable
         'skill_id',
         'availability_start',
         'availability_end',
+        'membership_status',
     ];
 
     public function skill()

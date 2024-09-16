@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('skill_id');
             $table->integer('availability_start');
             $table->integer('availability_end');
+            $table->enum("membership_status", ["active", "rejected", "pending"])->default("pending");
             $table->string('password');
             $table->timestamps();
 
