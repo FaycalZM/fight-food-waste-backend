@@ -14,6 +14,7 @@ use App\Models\DistributionBeneficiary;
 use App\Models\DistributionProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use PDF;
 
 class UsersManagementController extends Controller
 {
@@ -98,6 +99,52 @@ class UsersManagementController extends Controller
         }
     }
 
+    public function subscription_reminder() {}
+
+
+    /*  ------------------------- Skills ------------------------------- */
+    public function all_skills()
+    {
+        return Skill::all();
+    }
+
+    public function get_skill($id)
+    {
+        $skill = Skill::find($id);
+        if ($skill) {
+            return [
+                'message' => 'Skill found',
+                'Skill' => $skill
+            ];
+        } else {
+            return response([
+                'message' => 'Skill not found'
+            ], 404);
+        }
+    }
+
+
+    /*  ------------------------- Volunteers ------------------------------- */
+    public function all_volunteers()
+    {
+        return Volunteer::all();
+    }
+
+    public function get_volunteer($id)
+    {
+        $volunteer = Volunteer::find($id);
+        if ($volunteer) {
+            return [
+                'message' => 'volunteer found',
+                'volunteer' => $volunteer
+            ];
+        } else {
+            return response([
+                'message' => 'volunteer not found'
+            ], 404);
+        }
+    }
+
     public function approve_volunteer_subscription($id)
     {
         $volunteer = Volunteer::find($id);
@@ -152,52 +199,6 @@ class UsersManagementController extends Controller
         } else {
             return response([
                 'message' => 'Volunteer not found'
-            ], 404);
-        }
-    }
-
-    public function subscription_reminder() {}
-
-
-    /*  ------------------------- Skills ------------------------------- */
-    public function all_skills()
-    {
-        return Skill::all();
-    }
-
-    public function get_skill($id)
-    {
-        $skill = Skill::find($id);
-        if ($skill) {
-            return [
-                'message' => 'Skill found',
-                'Skill' => $skill
-            ];
-        } else {
-            return response([
-                'message' => 'Skill not found'
-            ], 404);
-        }
-    }
-
-
-    /*  ------------------------- Volunteers ------------------------------- */
-    public function all_volunteers()
-    {
-        return Volunteer::all();
-    }
-
-    public function get_volunteer($id)
-    {
-        $volunteer = Volunteer::find($id);
-        if ($volunteer) {
-            return [
-                'message' => 'volunteer found',
-                'volunteer' => $volunteer
-            ];
-        } else {
-            return response([
-                'message' => 'volunteer not found'
             ], 404);
         }
     }
@@ -295,6 +296,23 @@ class UsersManagementController extends Controller
         }
     }
 
+    public function generate_collection_report($id, Request $request)
+    {
+        $products = $request->products;
+        $quantities = $request->quantities;
+        $nb_volunteers = $request->nb_volunteers;
+        $collection = Collection::find($id);
+        $data = [
+            'nb_volunteers' => $nb_volunteers,
+            'collection' => $collection,
+            'products' => $products,
+            'quantities' => $quantities
+        ];
+        $pdf = PDF::loadView('collection_report', $data);
+        $report_name = "Collection_" . $collection->scheduled_time . "_report.pdf";
+        return $pdf->download($report_name);
+        
+    }
     /*  ------------------------- Stocks ------------------------------- */
     public function all_stocks()
     {
@@ -342,13 +360,6 @@ class UsersManagementController extends Controller
     public function find_product($id, Request $request)
     {
         $searched_term = $request->searched_term;
-        /*$stock = Stock::find($id);
-
-        $products = [];
-        foreach($stock->products as $product)
-        {
-            if($product->product_name   )
-        }*/
         $products = Product::where('product_name', 'LIKE', "%{$searched_term}%")
             ->where('stock_id', $id)
             ->get();
@@ -405,10 +416,17 @@ class UsersManagementController extends Controller
             'stock_id' => 'required|integer'
         ]);
 
-        $product = Product::create($fields);
+        $quantity = $request->validate([
+            'quantity' => 'required|integer',
+        ]);
+        for ($i=0; i < $quantity; $i++)
+        {
+            $product = Product::create($fields);
+        }
         return [
             'message' => 'Product created',
-            'product' => $product
+            'product' => $product,
+            'quantity' => $quantity
         ];
     }
 

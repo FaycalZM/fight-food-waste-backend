@@ -31,6 +31,7 @@ class VolunteerSeeder extends Seeder
                 'contact_info' => Str::random(20),
                 'availability_start' => $start,
                 'availability_end' => $end,
+                'membership_status' => 'pending'
             ]);
         }
     }

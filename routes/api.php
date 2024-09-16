@@ -28,7 +28,7 @@ Route::post('admin/register', [\App\Http\Controllers\AdminAuthController::class,
 Route::post('admin/login', [\App\Http\Controllers\AdminAuthController::class, 'login']);
 
 
-// admin READs
+
 Route::get('admin/all_merchants', [\App\Http\Controllers\UsersManagementController::class, 'all_users']);
 Route::get('admin/merchants/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_user']);
 Route::get('admin/merchants/{id}/approve_membership', [\App\Http\Controllers\UsersManagementController::class, 'approve_merchant_subscription']);
@@ -54,6 +54,7 @@ Route::post('admin/add_collection', [\App\Http\Controllers\UsersManagementContro
 Route::get('admin/collections/{id}/start', [\App\Http\Controllers\UsersManagementController::class, 'start_collection']);
 Route::get('admin/collections/{id}/close', [\App\Http\Controllers\UsersManagementController::class, 'close_collection']);
 Route::get('admin/collections/{id}/delete', [\App\Http\Controllers\UsersManagementController::class, 'delete_collection']);
+Route::post('admin/collections/{id}/pdf', [\App\Http\Controllers\UsersManagementController::class, 'generate_collection_report']);
 
 
 Route::get('admin/all_stocks', [\App\Http\Controllers\UsersManagementController::class, 'all_stocks']);
@@ -76,8 +77,6 @@ Route::post('admin/add_distribution', [\App\Http\Controllers\UsersManagementCont
 
 Route::get('admin/all_beneficiaries', [\App\Http\Controllers\UsersManagementController::class, 'all_beneficiaries']);
 Route::get('admin/beneficiaries/{id}', [\App\Http\Controllers\UsersManagementController::class, 'get_beneficiary']);
-
-
 
 // protected routes
 Route::middleware('auth:sanctum')->group(function () {
