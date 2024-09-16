@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->dateTime('scheduled_time');
             $table->string('route')->nullable();
+            $table->integer('volunteers_count')->default(0);
             $table->enum('distribution_status', ['Scheduled', 'In Progress', 'Completed'])->default('Scheduled');
             $table->timestamps();
         });

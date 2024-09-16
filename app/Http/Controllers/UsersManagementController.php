@@ -111,16 +111,14 @@ class UsersManagementController extends Controller
         ]);
 
         $start_hour = Carbon::parse($request->start_time)->hour;
-        $possible_volunteers = Volunteer::where('availability_start', '<=', $start_hour )
-                                        ->where('availability_end', '>', $start_hour)
-                                        ->get();
-        
+        $possible_volunteers = Volunteer::where('availability_start', '<=', $start_hour)
+            ->where('availability_end', '>', $start_hour)
+            ->get();
+
         $pool_of_choice = [];
-        foreach($possible_volunteers as $volunteer)
-        {
+        foreach ($possible_volunteers as $volunteer) {
             $skill = Skill::find($volunteer->skill_id);
-            if($skill->name == $request->task_type)
-            {
+            if ($skill->name == $request->task_type) {
                 $pool_of_choice[] = $volunteer;
             }
         }
@@ -136,7 +134,7 @@ class UsersManagementController extends Controller
         $assignment = VolunteerAssignment::create([
             'user_id' => $id,
             'schedule_id' => $schedule->id,
-            'task_type' => "Plumber",//$request->task_type,
+            'task_type' => "Plumber", //$request->task_type,
             'start_time' => $request->start_time,
             'assignment_status' => 'Assigned'
         ]);
@@ -252,24 +250,20 @@ class UsersManagementController extends Controller
     public function get_schedule($id)
     {
         $schedule = VolunteerSchedule::where('volunteer_id', $id)
-                                     ->where('schedule_day', date('Y-m-d'))
-                                     ->first();
-        if($schedule)
-        {
+            ->where('schedule_day', date('Y-m-d'))
+            ->first();
+        if ($schedule) {
             $assignments = VolunteerAssignment::where('schedule_id', $schedule->id)->get();
             return [
                 'message' => 'Schedule found',
                 'schedule' => $schedule,
                 'assignments' => $assignments
             ];
-        }
-        else
-        {
+        } else {
             return [
                 'message' => 'No schedule found today'
             ];
         }
-         
     }
 
 
@@ -526,6 +520,8 @@ class UsersManagementController extends Controller
             'user_id' => 'required|integer',
             'stock_id' => 'required|integer'
         ]);
+
+        $product = Product::create($fields);
 
         return [
             'message' => 'Product created',
