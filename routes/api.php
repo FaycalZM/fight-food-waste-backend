@@ -90,7 +90,7 @@ Route::get('admin/beneficiaries/{id}', [\App\Http\Controllers\UsersManagementCon
 Route::post('merchant/{id}/service', [\App\Http\Controllers\UsersManagementController::class, 'request_service']);
 
 
-Route::get('volunteer/{id}/schedule', [\App\Http\Controllers\UsersManagementController::class, 'get_today_schedule']);
+Route::get('volunteer/{id}/schedule', [\App\Http\Controllers\UsersManagementController::class, 'get_schedule']);
 Route::get('volunteer/{id}/all_schedules', [\App\Http\Controllers\UsersManagementController::class, 'get_all_schedules']);
 
 // protected routes
